@@ -57,14 +57,42 @@ Robot controller integration with comprehensive PyBullet simulation support.
 
 ## Installation
 
+### Quick Install (For End Users)
+
+If you want to install DifoTrain as a package on any PC:
+
+#### Step 1: Install the Package
+
+```bash
+pip install difotrain
+```
+
+> Requires Python 3.10 or newer
+
+#### Step 2: Setup MediaPipe Model
+
+Because the heavy AI model isn't bundled in the installer, you must run this command once in the folder where you want to work:
+
+```bash
+difotrain setup
+```
+
+This downloads the necessary MediaPipe model to that folder.
+
+#### Step 3: Start Recording
+
+```bash
+difotrain record
+```
+
+### Development Setup
+
 This project uses `uv` for dependency management, but standard `pip` works as well.
 
-### Prerequisites
+#### Prerequisites
 
 - Python 3.13 or higher
 - Webcam for motion recording
-
-### Setup
 
 #### Step 1: Install Dependencies
 
