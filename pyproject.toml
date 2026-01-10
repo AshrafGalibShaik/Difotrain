@@ -1,7 +1,7 @@
 [project]
 name = "difotrain"
 version = "0.1.0"
-description = "Add your description here"
+description = "Human to Robot Motion Transfer"
 readme = "README.md"
 license = { file = "LICENSE" }
 authors = [{ name = "Ashraf Galib Shaik" }]
@@ -12,3 +12,10 @@ dependencies = [
     "numpy",
     "torch",
 ]
+
+[project.scripts]
+difotrain = "difotrain.__main__:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
