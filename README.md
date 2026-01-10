@@ -86,6 +86,8 @@ Direct installation:
 pip install mediapipe opencv-python numpy torch
 ```
 
+> Note: You may need to generate `requirements.txt` from `pyproject.toml` first if using pip.
+
 #### Step 2: Download MediaPipe Model
 
 The system requires the `pose_landmarker_lite.task` model file. Run the setup script to download it automatically:

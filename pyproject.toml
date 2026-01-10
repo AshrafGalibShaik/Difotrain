@@ -1,11 +1,11 @@
 [project]
 name = "difotrain"
-version = "0.1.0"
+version = "0.1.1"
 description = "Human to Robot Motion Transfer"
 readme = "README.md"
 license = { file = "LICENSE" }
 authors = [{ name = "Ashraf Galib Shaik" }]
-requires-python = ">=3.13"
+requires-python = ">=3.10"
 dependencies = [
     "mediapipe",
     "opencv-python",
