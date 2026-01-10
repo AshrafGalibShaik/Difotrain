@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 import numpy as np
-from representation.skeleton import Trajectory  # Import your Trajectory
+from representation.skeleton import Trajectory, State  # Import your Trajectory
 
 class MotionDataset(Dataset):
     def __init__(self, trajectories):
@@ -11,8 +11,9 @@ class MotionDataset(Dataset):
         self.targets = []  # "Robot" actions (simulated as shifted human angles for demo)
         for traj in trajectories:
             for state in traj.states:
-                input_vec = np.concatenate([list(state.joints.values())])  # Flatten joints
-                target_vec = np.array(list(state.joint_angles.values()))  # Angles as targets
+                # Flatten joints: values is list of [x,y,z], so we make it array and flatten
+                input_vec = np.array(list(state.joints.values())).flatten()
+                target_vec = np.array(list(state.joint_angles.values())).flatten()
                 self.inputs.append(input_vec)
                 self.targets.append(target_vec)
         self.inputs = np.array(self.inputs, dtype=np.float32)
