@@ -11,6 +11,6 @@ The framework is organized around four pluggable interfaces:
 See ``difotrain.cli`` for the command line entry points.
 """
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 __all__ = ["__version__"]
