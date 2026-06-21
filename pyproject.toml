@@ -1,21 +1,29 @@
 [project]
 name = "difotrain"
-version = "0.1.1"
-description = "Human to Robot Motion Transfer"
+version = "0.2.0"
+description = "Embodiment-agnostic framework for training Vision-Language-Action (VLA) models from real-world and simulated demonstrations"
 readme = "README.md"
 license = { file = "LICENSE" }
 authors = [{ name = "Ashraf Galib Shaik" }]
 requires-python = ">=3.10"
 dependencies = [
-    "mediapipe",
-    "opencv-python",
     "numpy",
     "torch",
 ]
 
+[project.optional-dependencies]
+# Webcam human-video capture.
+capture = ["mediapipe", "opencv-python"]
+# Heavier simulation backends (the reference PlanarArm needs none of these).
+sim = ["pybullet"]
+dev = ["pytest"]
+
 [project.scripts]
-difotrain = "difotrain.__main__:main"
+difotrain = "difotrain.cli:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["difotrain"]

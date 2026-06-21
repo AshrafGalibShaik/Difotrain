@@ -102,11 +102,11 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Project specific
-capture/
-storage/
+# Project specific (runtime artifacts only -- anchored so package source is kept)
+/storage/
+/data/
+/runs/
 *.task
-*.json
 *.pth
 
 # IDE

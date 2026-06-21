@@ -1,14 +1,11 @@
 <div align="center">
 
-![DifoTrain Banner](https://github.com/user-attachments/assets/61a3e065-b58a-47e3-8e6c-ac37f54299f4)
-
 # DifoTrain
 
-### Human to Robot Motion Transfer
+### An embodiment-agnostic framework for training Vision-Language-Action (VLA) models from the real world
 
-[![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 </div>
 
@@ -16,220 +13,128 @@
 
 ## Overview
 
-DifoTrain is a comprehensive pipeline designed to capture human motion through webcam input, learn intelligent mappings to robot joint configurations, and control robotic systems to authentically imitate human movements in both simulated and real-world environments.
+DifoTrain is a framework for collecting demonstrations, training **Vision-Language-Action (VLA)** policies on them, and deploying those policies to robots — in simulation or on real hardware, on any embodiment. It learns from both **teleoperation** and **human video**, and it can either **wrap an existing VLA** (OpenVLA / Octo / π0 / ACT) or train a **native** model.
 
-## Features
-
-<table>
-<tr>
-<td width="50%">
-
-**Motion Capture**
-
-Real-time human pose estimation using Google MediaPipe Pose Landmarker for accurate motion tracking.
-
-</td>
-<td width="50%">
-
-**Representation**
-
-Standardized skeleton representation for human and robot states, enabling seamless data transfer.
-
-</td>
-</tr>
-<tr>
-<td width="50%">
-
-**Learning**
-
-Imitation learning module using PyTorch to map human joint positions and angles to robot commands.
-
-</td>
-<td width="50%">
-
-**Control**
-
-Robot controller integration with comprehensive PyBullet simulation support.
-
-</td>
-</tr>
-</table>
-
-## Installation
-
-### Quick Install (For End Users)
-
-If you want to install DifoTrain as a package on any PC:
-
-#### Step 1: Install the Package
-
-```bash
-pip install difotrain
-```
-
-> Requires Python 3.10 or newer
-
-#### Step 2: Setup MediaPipe Model
-
-Because the heavy AI model isn't bundled in the installer, you must run this command once in the folder where you want to work:
-
-```bash
-difotrain setup
-```
-
-This downloads the necessary MediaPipe model to that folder.
-
-#### Step 3: Start Recording
-
-```bash
-difotrain record
-```
-
-### Development Setup
-
-This project uses `uv` for dependency management, but standard `pip` works as well.
-
-#### Prerequisites
-
-- Python 3.13 or higher
-- Webcam for motion recording
-
-#### Step 1: Install Dependencies
-
-Using `uv` (Recommended):
-
-```bash
-uv sync
-```
-
-Using `pip`:
-
-```bash
-pip install -r requirements.txt
-```
-
-Direct installation:
-
-```bash
-pip install mediapipe opencv-python numpy torch
-```
-
-> Note: You may need to generate `requirements.txt` from `pyproject.toml` first if using pip.
-
-#### Step 2: Download MediaPipe Model
-
-The system requires the `pose_landmarker_lite.task` model file. Run the setup script to download it automatically:
-
-```bash
-python setup_mediapipe.py
-```
-
-## Usage
-
-### 1. Record Human Motion
-
-Capture motion from your webcam. This saves a trajectory file to `storage/human_trajectory.json`.
-
-```bash
-python main.py record
-```
-
-> Press `q` to stop recording.
-
-### 2. Generate Dummy Data (Optional)
-
-If you don't have a webcam, you can generate synthetic test data:
-
-```bash
-python -m tests.generate_dummy_data
-```
-
-### 3. Train Imitation Model
-
-Train a neural network to map human states to robot actions using the recorded data.
-
-```bash
-python -m learning.imitation
-```
-
-### 4. Run Robot Controller
-
-Execute the robot controller to perform the trajectory using retargeting and the learned model.
-
-```bash
-python -m robot.controller
-```
-
-## Project Structure
-
-```
-difotrain/
-├── capture/           # Modules for webcam capture and MediaPipe processing
-├── representation/    # Data structures for Skeleton and Trajectory states
-├── storage/          # JSON storage for recorded movements
-├── learning/         # PyTorch models for imitation learning
-├── robot/            # Robot control interfaces
-├── simulation/       # PyBullet simulation environments
-└── tests/            # Unit tests and data generators
-```
+The whole `collect → train → eval → deploy` loop runs out of the box on CPU using a built-in, dependency-free simulated robot — no webcam, GPU, or hardware required.
 
 ## Architecture
 
-```mermaid
-graph LR
-    A[Webcam Input] --> B[MediaPipe Pose]
-    B --> C[Human Skeleton]
-    C --> D[Trajectory Storage]
-    D --> E[Imitation Learning]
-    E --> F[Robot Controller]
-    F --> G[PyBullet Simulation]
-    F --> H[Real Robot]
+The framework hangs off four pluggable interfaces. A custom robot, data source, or model is just an implementation of one of these, registered into the framework.
+
+| Interface | Module | Implementations shipped |
+|-----------|--------|-------------------------|
+| `Robot` | `difotrain.embodiment` | `PlanarArm` (sim, dependency-free); PyBullet/MuJoCo/real plug in here |
+| `DataSource` | `difotrain.data.sources` | `ScriptedTeleopSource`, `HumanVideoSource`, `SyntheticSource` |
+| `Policy` | `difotrain.policy` | `MLPVLAPolicy` (native); `EchoVLAPolicy` (wrapper reference) |
+| `EpisodeDataset` | `difotrain.data` | LeRobot/RLDS-style directory dataset |
+
+```
+Collect ─▶ Standardize ─▶ Train/Finetune ─▶ Evaluate ─▶ Deploy ─▶ (feedback loop)
+ teleop      Episode         BC trainer        sim/real    safety     log rollouts
+ human-vid   dataset         + normalize       success     layer      back to dataset
 ```
 
-## Workflow
+## Install
 
-```mermaid
-sequenceDiagram
-    participant User
-    participant Capture
-    participant Learning
-    participant Robot
-    
-    User->>Capture: Record Motion
-    Capture->>Capture: Process with MediaPipe
-    Capture->>Learning: Save Trajectory
-    User->>Learning: Train Model
-    Learning->>Learning: Map Human to Robot
-    User->>Robot: Execute Movement
-    Robot->>Robot: Apply Learned Mapping
+```bash
+pip install difotrain                 # core (numpy + torch)
+pip install "difotrain[capture]"      # + MediaPipe/OpenCV for webcam human-video
+pip install "difotrain[sim]"          # + PyBullet for heavier sim backends
+pip install "difotrain[dev]"          # + pytest
 ```
 
-## Technologies
+## Quickstart
 
-- **MediaPipe**: Human pose estimation and landmark detection
-- **PyTorch**: Neural network training and inference
-- **OpenCV**: Video capture and image processing
-- **PyBullet**: Physics simulation and robot control
-- **NumPy**: Numerical computing and array operations
+The reference task: a 2-link arm must **reach a named target conveyed only through language** — so success measures genuine language grounding, not memorized motion.
 
-## Contributing
+```bash
+difotrain info                                   # list registered robots/sources
+difotrain collect --out data/reach --episodes 200
+difotrain train   --data data/reach --out runs/policy.pt --epochs 150
+difotrain eval    --policy runs/policy.pt
+difotrain deploy  --policy runs/policy.pt --instruction "reach to the lower left"
+```
 
-Contributions are welcome. Please feel free to submit a Pull Request.
+Typical `eval` output after training:
+
+```
+success_rate     : 87.50%
+mean_final_error : 0.0259
+  [OK ] up           err=0.0180
+  [OK ] down         err=0.0037
+  ...
+```
+
+### Python API
+
+```python
+from difotrain.data.dataset import EpisodeDataset
+from difotrain.data.sources.scripted_teleop import ScriptedTeleopSource
+from difotrain.train.trainer import train_policy, TrainConfig
+from difotrain.eval.evaluator import evaluate_reaching
+
+ds = EpisodeDataset("data/reach")
+ds.extend(ScriptedTeleopSource(seed=0).collect(200))     # collect demos
+policy = train_policy(ds, TrainConfig(epochs=150))       # behavior cloning
+print(evaluate_reaching(policy))                          # score in sim
+```
+
+## Adding your own robot
+
+```python
+from difotrain.core import register_robot
+from difotrain.embodiment.base import Robot, RobotSpec
+
+@register_robot("my_arm")
+class MyArm(Robot):
+    def __init__(self):
+        self.spec = RobotSpec(name="my_arm", dof=..., observation_space=..., action_space=...)
+    def reset(self, *, instruction="", seed=None): ...
+    def get_observation(self): ...
+    def apply_action(self, action): ...
+```
+
+Sim and real robots implement the *same* `Robot` API, so policies, the evaluator, and the deploy runner drive them unchanged.
+
+## Learning from human video
+
+`HumanVideoSource` estimates human pose (MediaPipe) and uses a `Retargeter` to map it into a robot's action space, turning cheap video into trainable demonstrations. It also runs offline from a recorded trajectory JSON:
+
+```bash
+difotrain setup     # download the MediaPipe pose model
+difotrain record    # capture human motion from a webcam
+```
+
+## Documentation
+
+Full docs live in [`docs/`](docs/README.md):
+
+- [Installation](docs/installation.md)
+- [Quickstart](docs/quickstart.md)
+- [Concepts & architecture](docs/concepts.md)
+- [CLI reference](docs/cli.md)
+- [Python API](docs/python-api.md)
+- [Extending DifoTrain](docs/extending.md) — add your own robot, data source, or model
+- [Learning from human video](docs/human-video.md)
+- [Examples](docs/examples.md)
+- [FAQ & troubleshooting](docs/faq.md)
+
+## Roadmap
+
+- [x] Core interfaces, sim robot, dataset, native VLA, BC training, eval, deploy + safety
+- [x] Scripted-teleop and human-video data sources, retargeting
+- [ ] PyBullet / MuJoCo backends behind the `Robot` API
+- [ ] Wrapped OpenVLA / Octo / π0 / ACT policies
+- [ ] Image observations + transformer language encoder
+- [ ] Real-hardware drivers and online DAgger feedback loop
+
+## Development
+
+```bash
+uv sync               # or: pip install -e ".[dev,capture]"
+python -m unittest discover -s tests -v
+```
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- Google MediaPipe team for the pose estimation models
-- PyBullet community for the simulation framework
-- PyTorch team for the deep learning framework
-
----
-
-<div align="center">
-
-Made with dedication to advancing human-robot interaction
-
-</div>
+MIT — see [LICENSE](LICENSE).
