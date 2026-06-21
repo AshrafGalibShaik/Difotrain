@@ -13,12 +13,13 @@ required (a dependency-free simulated robot ships with the framework).
 1. [Installation](installation.md) — install options and verification.
 2. [Quickstart](quickstart.md) — train and run your first policy in 5 minutes.
 3. [Concepts](concepts.md) — how the framework is designed and why.
-4. [CLI reference](cli.md) — every command and flag.
-5. [Python API](python-api.md) — using the framework from code.
-6. [Extending DifoTrain](extending.md) — add your own robot, data source, or model.
-7. [Learning from human video](human-video.md) — the MediaPipe capture path.
-8. [Examples](examples.md) — runnable end-to-end snippets.
-9. [FAQ & troubleshooting](faq.md).
+4. [How it works (full architecture)](how-it-works.md) — the complete deep-dive: every layer, data flow, and internals.
+5. [CLI reference](cli.md) — every command and flag.
+6. [Python API](python-api.md) — using the framework from code.
+7. [Extending DifoTrain](extending.md) — add your own robot, data source, or model.
+8. [Learning from human video](human-video.md) — the MediaPipe capture path.
+9. [Examples](examples.md) — runnable end-to-end snippets.
+10. [FAQ & troubleshooting](faq.md).
 
 ## The 30-second version
 

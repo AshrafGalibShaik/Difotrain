@@ -115,6 +115,7 @@ Full docs live in [`docs/`](docs/README.md):
 - [Installation](docs/installation.md)
 - [Quickstart](docs/quickstart.md)
 - [Concepts & architecture](docs/concepts.md)
+- [How it works — full architecture deep-dive](docs/how-it-works.md)
 - [CLI reference](docs/cli.md)
 - [Python API](docs/python-api.md)
 - [Extending DifoTrain](docs/extending.md) — add your own robot, data source, or model
