@@ -1,5 +1,4 @@
 <div align="center">
-[Uploading FIR_Details_Data.csv…]()
 <img width="1200" height="626" alt="difotrain" src="https://github.com/user-attachments/assets/cefc993b-c790-4e33-8b3a-51f13135f9dc" />
 
 # DifoTrain
