@@ -106,6 +106,7 @@ dmypy.json
 /storage/
 /data/
 /runs/
+examples/**/_data/
 *.task
 *.pth
 
