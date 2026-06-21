@@ -10,6 +10,10 @@ It runs:
 3. **Eval** — success rate across all targets.
 4. **Deploy** — runs the policy for several instructions and draws the arm
    reaching each one in ASCII.
+5. **Bonus (optional)** — if the `[sim]` extra is installed, drives a full 3D
+   physics arm (PyBullet) through the *same* interface, to show the framework is
+   embodiment-agnostic. Install it with `pip install "difotrain[sim]"`; the demo
+   skips this step gracefully otherwise.
 
 ## Run it
 

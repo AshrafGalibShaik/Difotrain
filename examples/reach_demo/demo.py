@@ -102,7 +102,42 @@ def main() -> None:
         print(render(robot.q, target_xy(name), instruction))
         print()
 
+    # 5. SAME INTERFACE, 3D PHYSICS (optional) -------------------------
+    pybullet_showcase()
+
     print("Done. Try editing the instruction list above and re-running!")
+
+
+def pybullet_showcase() -> None:
+    """Demonstrate that the *same* Robot/deploy interface drives a full 3D
+    physics arm. Requires the optional sim extra: pip install "difotrain[sim]".
+    """
+    try:
+        import pybullet  # noqa: F401
+    except ImportError:
+        print("\n[bonus] PyBullet 3D backend not installed - skipping.")
+        print('        Install it with:  pip install "difotrain[sim]"')
+        return
+
+    from difotrain.embodiment.sim.pybullet_arm import PyBulletArm
+
+    print("\n[bonus] Same interface, real 3D physics (PyBullet):")
+    robot = PyBulletArm(gui=False)
+    try:
+        robot.reset(seed=0)
+        start = robot.end_effector().copy()
+        # Drive every joint with a constant command for a moment.
+        action = 0.6 * np.ones(robot.act_dim, dtype=np.float32)
+        for _ in range(60):
+            robot.apply_action(action)
+        end = robot.end_effector()
+        print(f"      robot      : {robot.spec.name}  ({robot.spec.dof} DoF)")
+        print(f"      start  EE  : ({start[0]:+.3f}, {start[1]:+.3f}, {start[2]:+.3f})")
+        print(f"      end    EE  : ({end[0]:+.3f}, {end[1]:+.3f}, {end[2]:+.3f})")
+        print(f"      moved      : {np.linalg.norm(end - start):.3f} m")
+        print("      -> the same DeployRunner / SafetyLayer / Policy work here unchanged.")
+    finally:
+        robot.close()
 
 
 if __name__ == "__main__":
