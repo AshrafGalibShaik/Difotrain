@@ -43,3 +43,24 @@ jobs:
           difotrain collect --out /tmp/ci_data --episodes 40 --steps 30
           difotrain train --data /tmp/ci_data --out /tmp/ci_runs/p.pt --epochs 20
           difotrain eval --policy /tmp/ci_runs/p.pt
+
+  pybullet:
+    name: PyBullet backend (Python 3.12)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install package with the sim extra
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,sim]"
+
+      - name: Run PyBullet backend tests
+        run: python -m unittest tests.test_pybullet -v

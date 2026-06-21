@@ -47,6 +47,24 @@ The same interface is implemented by simulated robots and real hardware. A
 implementation, `PlanarArm`, is a dependency-free 2-link arm used by all the
 examples and tests.
 
+A full 3D physics backend, `PyBulletArm`, ships behind the same interface
+(`pip install "difotrain[sim]"`). It loads a URDF arm (Kuka iiwa by default) and
+exposes joint positions + end-effector pose as the observation and per-joint
+deltas as the action:
+
+```python
+from difotrain.embodiment.sim.pybullet_arm import PyBulletArm
+
+robot = PyBulletArm(gui=False)              # or urdf="franka_panda/panda.urdf"
+obs = robot.reset(seed=0)
+obs = robot.apply_action(robot.spec.action_space.sample())
+print(robot.end_effector())
+robot.close()
+```
+
+Because it satisfies the `Robot` API, the trainer, deploy runner, and safety
+layer all work with it unchanged.
+
 ### 2. `DataSource` — where demonstrations come from
 
 `difotrain/data/sources/base.py`

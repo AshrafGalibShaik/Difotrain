@@ -81,9 +81,10 @@ def _cmd_info(args: argparse.Namespace) -> int:
     from .core.registry import registry
     from .embodiment.sim.planar_arm import NAMED_TARGETS
 
-    # Importing the sources/policies registers them.
+    # Importing the sources/policies/robots registers them.
     from .data import sources  # noqa: F401
     from .policy.native import mlp_vla  # noqa: F401
+    from .embodiment import sim  # noqa: F401
 
     print(f"DifoTrain v{__version__}")
     print(f"  robots   : {sorted(registry.robots)}")

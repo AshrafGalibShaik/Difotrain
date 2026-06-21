@@ -126,7 +126,7 @@ Full docs live in [`docs/`](docs/README.md):
 
 - [x] Core interfaces, sim robot, dataset, native VLA, BC training, eval, deploy + safety
 - [x] Scripted-teleop and human-video data sources, retargeting
-- [ ] PyBullet / MuJoCo backends behind the `Robot` API
+- [x] PyBullet backend behind the `Robot` API (`difotrain[sim]`); MuJoCo next
 - [ ] Wrapped OpenVLA / Octo / π0 / ACT policies
 - [ ] Image observations + transformer language encoder
 - [ ] Real-hardware drivers and online DAgger feedback loop
